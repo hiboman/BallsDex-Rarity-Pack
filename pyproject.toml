@@ -1,6 +1,6 @@
 [project]
 name = "rarity"
-version = "0.0.1"
+version = "0.0.2"
 
 description = "Rarity package for BallsDex"
 license = "MIT"

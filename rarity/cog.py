@@ -91,6 +91,7 @@ class Rarity(commands.Cog):
         interaction: discord.Interaction["BallsDexBot"],
         countryball: BallEnabledTransform | None = None,
         tier: int | None = None,
+        reverse: bool = False,
     ):
         """
         Show the rarity list of the collectibles
@@ -100,7 +101,9 @@ class Rarity(commands.Cog):
         countryball: BallEnabledTransform
             Specific countryball to show rarity for
         tier: int
-            Specific tier to show (1-based)
+            Specific tier to show
+        reverse: bool
+            Whether to reverse the rarity list
         """
         try:
             await interaction.response.defer(thinking=True)
@@ -186,7 +189,11 @@ class Rarity(commands.Cog):
 
             all_entries = []
 
-            for i, rarity in enumerate(sorted_rarities, 1):
+            rarity_list = list(enumerate(sorted_rarities, 1))
+            if reverse:
+                rarity_list.reverse()
+
+            for i, rarity in rarity_list:
                 collectibles = rarity_to_collectibles[rarity]
                 names = "\n".join(
                     f"\u200b ⋄ {self.bot.get_emoji(c.emoji_id) or 'N/A'} {c.country}" for c in collectibles

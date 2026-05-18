@@ -123,14 +123,31 @@ class Rarity(commands.Cog):
                 await interaction.followup.send("You can't use both parameters at the same time.", ephemeral=True)
                 return
 
+            rarities = [c.rarity for c in enabled_collectibles if c.rarity > 0]
+            min_rarity = min(rarities) if rarities else 1.0
+            max_rarity = max(rarities) if rarities else 1.0
+
+            if max_rarity > min_rarity:
+                multiplier = 99.0 / (max_rarity - min_rarity)
+            else:
+                multiplier = 1.0
+
             rarity_to_collectibles = {}
             for c in enabled_collectibles:
-                rarity = int(round(c.rarity * 100))
-                rarity_to_collectibles.setdefault(rarity, []).append(c)
+                if max_rarity > min_rarity:
+                    tier_num = int((c.rarity - min_rarity) * multiplier + 1.5)
+                else:
+                    tier_num = 1
+                tier_num = max(1, tier_num)
+                rarity_to_collectibles.setdefault(tier_num, []).append(c)
 
             if countryball:
                 target_ball = countryball
-                tier_num = int(round(target_ball.rarity * 100))
+                if max_rarity > min_rarity:
+                    tier_num = int((target_ball.rarity - min_rarity) * multiplier + 1.5)
+                else:
+                    tier_num = 1
+                tier_num = max(1, tier_num)
                 collectible_name = f"\u200b ⋄ {self.bot.get_emoji(target_ball.emoji_id) or 'N/A'} {target_ball.country}"
 
                 embed = discord.Embed(title=f"{settings.bot_name} Rarity List", color=discord.Color.blurple())
